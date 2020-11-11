@@ -9,7 +9,6 @@ from sklearn.manifold import spectral_embedding
 
 from kmeans import KMeans
 from spectral_clustering import SpectralClustering
-from util import _generate_three_circle_data
 
 class TestKMeans(unittest.TestCase):
     def test_implementation(self):
@@ -66,16 +65,6 @@ class TestSpectralClustering(unittest.TestCase):
         sc.fit(pos_list)
         self.assertAlmostEqual(metrics.adjusted_rand_score(sc.labels_, ground_truth), 1.0)
 
-    def test_three_circles(self):
-        # kmeans does not work well for this irregular data
-        pos_list, ground_truth = _generate_three_circle_data()
-        sc = SpectralClustering(3, gamma=1.0)
-        np.random.seed(2020)
-        sc.fit(pos_list)
-        standard = cluster.SpectralClustering(n_clusters=3)
-        standard.fit(pos_list)
-        print(metrics.adjusted_rand_score(sc.labels_, ground_truth))
-        print(metrics.adjusted_rand_score(standard.labels_, ground_truth))
 
 if __name__ == '__main__':
     unittest.main()
