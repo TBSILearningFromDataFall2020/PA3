@@ -1,9 +1,10 @@
 import numpy as np
+
 class KMeans:
     """
     Parameters:
     -----------
-    n_clusters : the number of clusters to divide the input_data        
+    n_clusters : the number of clusters
     tol: double, optional, the stopping criteria for the loss function
     max_iter: int, optional, the maximal number of iteration        
     """
