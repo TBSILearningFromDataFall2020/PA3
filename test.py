@@ -84,9 +84,8 @@ class TestGMM(unittest.TestCase):
         covariances_groud_truth[0, :, :] = np.eye(2)
         covariances_groud_truth[1, :, :] = np.eye(2)
         self.assertTrue(np.linalg.norm(covariances_groud_truth - gmm.covariances_) < 0.2)
+        self.assertAlmostEqual(metrics.adjusted_rand_score(gmm.predict(pos_list), ground_truth), 1.0)
 
-    def test_iris(self):
-        iris = datasets.load_iris()
 
 if __name__ == '__main__':
     unittest.main()

@@ -54,7 +54,7 @@ class GMM:
                 break
             else:
                 old_log_likelihood = log_likelihood
-            gamma /= norm_sum # each column of gamma must sum to zero
+            gamma /= norm_sum # each column of gamma must sum to one
             gamma_sum = np.sum(gamma, axis=1)
             # enter M step
             # estimate the parameter
@@ -73,4 +73,9 @@ class GMM:
         self.train(x_train)
 
     def predict(self, x_test):
-        pass
+        n_data = x_test.shape[0]
+        gamma = np.zeros([self.n_components, n_data])
+        for i in range(self.n_components):
+            gamma[i, :] = self.weights_[i] * stats.multivariate_normal.pdf(x_test,
+                            mean=self.means_[i, :], cov=self.covariances_[i, :])
+        return gamma.argmax(axis=0)
