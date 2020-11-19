@@ -1,7 +1,7 @@
 # PA3
 
 <!-- you can modify the answering template freely -->
-## Question 1.2
+## Question 3.1(b)
 Below is my experiment visualization result for applying kmeans to an unevenly distributed
 Gaussian blobs.
 

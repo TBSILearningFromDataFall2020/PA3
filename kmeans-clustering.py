@@ -13,24 +13,16 @@ from matplotlib import pyplot as plt
 # please modify the following import correspondingly
 from kmeans import KMeans
 
-class data_descriptor(object):
-    def __init__(self,data):
-        self.data = data
-    def plot(self):
-        plt.title('data generated from gaussian mixture model')
-        plt.scatter(self.data[:,0], self.data[:,1]) 
-        plt.show()
+class gaussian_mixture_generator:
 
-class gaussian_mixture_generator(data_descriptor):
-
-    def __init__(self, mean, covariance, weight, data_points = 300 ):
+    def __init__(self, mean, covariance, weight, data_points=300):
         num_component = len(weight)
         mixture_type_list = list(np.random.choice(np.arange(num_component), size=data_points, p=weight))
         whole_data = np.random.multivariate_normal(mean[0, :], covariance[0, :, :], size=mixture_type_list.count(0))
         for i in range(1, num_component):
             set_tmp = np.random.multivariate_normal(mean[i, :], covariance[i, :, :], size=mixture_type_list.count(i))
             whole_data = np.concatenate((whole_data,set_tmp))
-        super(gaussian_mixture_generator, self).__init__(whole_data)
+        self.data = whole_data
 
 class Kmeans_algorithm(KMeans):
     '''
@@ -62,16 +54,16 @@ class Kmeans_algorithm(KMeans):
 if __name__ == '__main__':
     mu_1 = np.array([1, 1])
     mu_2 = np.array([5, 1])
-    mu = np.concatenate((mu_1,mu_2)).reshape(2, 2)
+    mu = np.concatenate((mu_1, mu_2)).reshape(2, 2)
     # covariance matrix
-    C_1 = np.array([[0.5, 0],[0, 8]])
-    C_2 = np.array([[0.5, 0],[0, 8]])
-    Cov = np.concatenate((C_1,C_2)).reshape(2, 2, 2)
+    C_1 = np.array([[0.5, 0], [0, 8]])
+    C_2 = np.array([[0.5, 0], [0, 8]])
+    Cov = np.concatenate((C_1, C_2)).reshape(2, 2, 2)
     
     # mixture weights
     w_1 = 0.5
     w_2 = 1 - w_1
-    weight = [w_1,w_2]
+    weight = [w_1, w_2]
     heuristic_num_clusters = 2
     num_of_samples = 1500
     dg_instance = gaussian_mixture_generator(mu, Cov, weight, data_points=num_of_samples)
