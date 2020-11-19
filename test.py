@@ -1,4 +1,5 @@
 import unittest
+import time
 
 import numpy as np
 from sklearn import metrics
@@ -7,6 +8,7 @@ from sklearn import datasets
 from sklearn import cluster
 from sklearn import mixture
 from sklearn.manifold import spectral_embedding
+from sklearn.metrics.pairwise import pairwise_kernels
 
 from kmeans import KMeans
 from spectral_clustering import SpectralClustering
@@ -66,7 +68,21 @@ class TestSpectralClustering(unittest.TestCase):
         sc.fit(pos_list)
         self.assertAlmostEqual(metrics.adjusted_rand_score(sc.labels_, ground_truth), 1.0)
 
+    def test_affinity_matrix_implementation_time(self):
+        x = np.random.normal(size=[1000, 10])
+        start_time = time.time()
+        standard = pairwise_kernels(x, metric='rbf', gamma=0.5)
+        time_delta_1 = time.time() - start_time
 
+        start_time = time.time()
+        sc = SpectralClustering(2, gamma=0.5)        
+        affinity_matrix_ = sc._get_affinity_matrix(x)
+        time_delta_2 = time.time() - start_time
+
+        self.assertTrue(10 * time_delta_1 > time_delta_2)
+        norm_1 = np.linalg.norm(standard)
+        norm_2 = np.linalg.norm(affinity_matrix_)
+        self.assertAlmostEqual(norm_1, norm_2)
 
 if __name__ == '__main__':
     unittest.main()
