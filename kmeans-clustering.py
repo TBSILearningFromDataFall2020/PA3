@@ -55,7 +55,7 @@ class Kmeans_algorithm(KMeans):
         for i in range(self.n_clusters):
             category_i = np.where(self.labels_ == i)[0]
             plt.scatter(self.data[category_i, 0], self.data[category_i, 1], color=color_vector[i])
-        
+
         plt.savefig(savefig_name)
         plt.show()
 
