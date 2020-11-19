@@ -79,6 +79,7 @@ class TestSpectralClustering(unittest.TestCase):
         affinity_matrix_ = sc._get_affinity_matrix(x)
         time_delta_2 = time.time() - start_time
 
+        print(time_delta_1, time_delta_2)
         self.assertTrue(10 * time_delta_1 > time_delta_2)
         norm_1 = np.linalg.norm(standard)
         norm_2 = np.linalg.norm(affinity_matrix_)

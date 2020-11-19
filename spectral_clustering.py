@@ -51,7 +51,12 @@ class SpectralClustering:
             np.array, shape (num_samples, num_samples)
         '''
         # start of your modification
-        return np.ones([x_train.shape[0], x_train.shape[0]])
+        n = x_train.shape[0]
+        A = np.zeros([x_train.shape[0], x_train.shape[0]])
+        for i in range(n):
+            for j in range(n):
+                A[i, j] = np.exp(-self.gamma * np.linalg.norm(x_train[i, :] - x_train[j, :]) ** 2)
+        return A
         # end of your modification
 
     def _get_embedding(self):
