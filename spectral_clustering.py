@@ -51,15 +51,7 @@ class SpectralClustering:
             np.array, shape (num_samples, num_samples)
         '''
         # start of your modification
-        n = x_train.shape[0] # num_data
-        m = x_train.shape[-1] # num_features
-        cross_ = x_train @ x_train.T
-        cross_diag = np.diag(cross_)
-        all_one_v = np.ones([n])
-        square_mat = np.kron(all_one_v, cross_diag).reshape([n, n])
-        square_mat += np.kron(cross_diag, all_one_v).reshape([n, n])
-        square_mat -= 2 * cross_
-        return np.exp(-self.gamma * square_mat)
+        return np.ones([x_train.shape[0], x_train.shape[0]])
         # end of your modification
 
     def _get_embedding(self):
