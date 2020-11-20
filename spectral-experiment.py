@@ -77,7 +77,6 @@ if __name__ == '__main__':
     X, y = _generate_three_circle_data()
     sp = SpectralAlgorithm(X, 3)
     max_score = 0
-    # please modify the searching range to get better results
     start_gamma = 1
     end_gamma = 2000
     optimal_gamma = start_gamma
