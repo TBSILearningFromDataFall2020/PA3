@@ -49,7 +49,7 @@ class SpectralAlgorithm(SpectralClustering):
         """
         self.affinity_matrix_ = pairwise_kernels(x_train, metric='rbf', gamma=self.gamma)
         embedding_features = spectral_embedding(self.affinity_matrix_, n_components=self.n_clusters,
-            norm_laplacian=True, drop_first=False)
+            norm_laplacian=False, drop_first=False)
         kmeans = KMeans(n_clusters=self.n_clusters)
         kmeans.fit(embedding_features)
         self.labels_ = kmeans.labels_
@@ -71,16 +71,17 @@ if __name__ == '__main__':
     X, y = read_spiral_data()
     sp = SpectralAlgorithm(X, 2)
     max_score = 0
-    start_gamma = 130
-    end_gamma = 240
+    start_gamma = 1
+    end_gamma = 2000
     optimal_gamma = start_gamma
     gamma_list = np.linspace(start_gamma, end_gamma)
     inertia_list = []
     # linear grid search
     for gamma in gamma_list:
+        sp.gamma = gamma
         sp.fit()
         score = metrics.adjusted_rand_score(sp.labels_, y)
-        if score < max_score:
+        if score > max_score:
             max_score = score
             optimal_gamma = gamma
     print('max score', max_score)
