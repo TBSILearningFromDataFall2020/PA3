@@ -51,23 +51,14 @@ class SpectralAlgorithm(SpectralClustering):
         fit the model with self.data
         '''
         super().fit(self.data)
-
-    def train(self, x_train):
-        """Receive the input training data, then learn the model.
-
-        Parameters
-        ----------
-        x_train: np.array, shape (num_samples, num_features)
-        Returns
-        -------
-        None
-        """
-        self.affinity_matrix_ = pairwise_kernels(x_train, metric='rbf', gamma=self.gamma)
-        embedding_features = spectral_embedding(self.affinity_matrix_, n_components=self.n_clusters,
-            norm_laplacian=False, drop_first=False)
-        kmeans = KMeans(n_clusters=self.n_clusters)
-        kmeans.fit(embedding_features)
-        self.labels_ = kmeans.labels_
+    # uncomment the following line if you want to use sklearn implementation
+    # def train(self, x_train):
+    #    self.affinity_matrix_ = pairwise_kernels(x_train, metric='rbf', gamma=self.gamma)
+    #    embedding_features = spectral_embedding(self.affinity_matrix_, n_components=self.n_clusters,
+    #        norm_laplacian=False, drop_first=False)
+    #    kmeans = KMeans(n_clusters=self.n_clusters)
+    #    kmeans.fit(embedding_features)
+    #    self.labels_ = kmeans.labels_
 
     def plot(self, savefig_name):
         color_vector = ['r', 'b', 'g', 'm', 'y', 'c', 'k']
@@ -105,8 +96,4 @@ if __name__ == '__main__':
     sp.gamma = optimal_gamma
     sp.fit()
     print(metrics.adjusted_rand_score(sp.labels_, y))
-<<<<<<< HEAD
     sp.plot('spectral-experiment.svg')
-=======
-    sp.plot('spectral-experiment.svg')
->>>>>>> 543116301ae081afc02f42e0c77b19b5089026dd
