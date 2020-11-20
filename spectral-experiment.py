@@ -1,3 +1,4 @@
+import csv
 import random
 
 import numpy as np
@@ -9,19 +10,15 @@ from sklearn.manifold import spectral_embedding
 from sklearn.cluster import KMeans
 from sklearn import metrics
 
-def _generate_three_circle_data():
+def read_spiral_data():
+    f = open('spirals_clustered.csv')
+    reader = csv.reader(f, delimiter=',')
     pos_list = []
-    num_list = [60,100,140]
     ground_truth = []
-    rd = random.Random()
-    # make the result reproducible across multiple run
-    rd.seed(0)
-    for i in range(1, 4): # radius: 0.1 * i
-        for _ in range(num_list[i - 1]):
-            r = 0.1 * i + 0.01 * (2 * rd.random() - 1)
-            angle = 2 * np.pi * rd.random()
-            pos_list.append([r * np.cos(angle), r * np.sin(angle)])
-            ground_truth.append(i)
+    for row in reader:
+        pos_list.append([row[0], row[1]])
+        ground_truth.append(row[2])
+
     return (np.asarray(pos_list), np.asarray(ground_truth))
 
 class SpectralAlgorithm(SpectralClustering):
@@ -33,6 +30,7 @@ class SpectralAlgorithm(SpectralClustering):
         self.num = self.data.shape[0] # row, n data points
         self.d = input_data[0,:].shape[0]
         super().__init__(n_clusters)
+
     def fit(self):
         '''
         fit the model with self.data
@@ -52,11 +50,9 @@ class SpectralAlgorithm(SpectralClustering):
         self.affinity_matrix_ = pairwise_kernels(x_train, metric='rbf', gamma=self.gamma)
         embedding_features = spectral_embedding(self.affinity_matrix_, n_components=self.n_clusters,
             norm_laplacian=False, drop_first=False)
-        normalized_embedding_features = embedding_features /np.linalg.norm(embedding_features, axis=1).reshape((self.affinity_matrix_.shape[0], 1))
         kmeans = KMeans(n_clusters=self.n_clusters)
-        kmeans.fit(normalized_embedding_features)
+        kmeans.fit(embedding_features)
         self.labels_ = kmeans.labels_
-        self.inertia_ = kmeans.inertia_
 
     def plot(self, savefig_name):
         color_vector = ['r', 'b', 'g', 'm', 'y', 'c', 'k']
@@ -72,22 +68,23 @@ class SpectralAlgorithm(SpectralClustering):
         plt.show()
 
 if __name__ == '__main__':
-    X, y = _generate_three_circle_data()
+    X, y = read_spiral_data()
     sp = SpectralAlgorithm(X, 3)
-    min_inertia_ = 100000
+    max_score = 0
     start_gamma = 1
-    end_gamma = 1200
+    end_gamma = 2400
     optimal_gamma = start_gamma
     gamma_list = np.linspace(start_gamma, end_gamma)
     inertia_list = []
     # linear grid search
     for gamma in np.linspace(start_gamma, end_gamma):
         sp.fit()
-        inertia_list.append(sp.inertia_)
-        if sp.inertia_ > min_inertia_:
-            min_inertia_ = sp.inertia_
-            optimal_gamma = start_gamma
-    print(inertia_list)    
+        score = metrics.adjusted_rand_score(sp.labels_, y)
+        if score > max_score:
+            max_score = score
+            optimal_gamma = gamma
+    print(max_score)
+    print(optimal_gamma)
     sp.gamma = optimal_gamma
     sp.fit()
-    sp.plot('spectral-experiment.svg')
+    # sp.plot('spectral-experiment.svg')
