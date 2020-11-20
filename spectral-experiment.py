@@ -21,6 +21,21 @@ def read_spiral_data():
 
     return (np.asarray(pos_list), np.asarray(ground_truth))
 
+def _generate_three_circle_data():
+    pos_list = []
+    num_list = [60, 100, 140]
+    ground_truth = []
+    rd = random.Random()
+    # make the result reproducible across multiple run
+    rd.seed(0)
+    for i in range(1, 4): # radius: 0.1 * i
+        for _ in range(num_list[i - 1]):
+            r = 0.1 * i + 0.01 * (2 * rd.random() - 1)
+            angle = 2 * np.pi * rd.random()
+            pos_list.append([r * np.cos(angle), r * np.sin(angle)])
+            ground_truth.append(i)
+    return (np.asarray(pos_list), np.asarray(ground_truth))
+
 class SpectralAlgorithm(SpectralClustering):
     '''
     kmeans wrapper with plotting support
@@ -68,9 +83,10 @@ class SpectralAlgorithm(SpectralClustering):
         plt.show()
 
 if __name__ == '__main__':
-    X, y = read_spiral_data()
-    sp = SpectralAlgorithm(X, 2)
+    X, y = _generate_three_circle_data()
+    sp = SpectralAlgorithm(X, 3)
     max_score = 0
+    # please modify the searching range to get better results
     start_gamma = 1
     end_gamma = 2000
     optimal_gamma = start_gamma
@@ -89,4 +105,8 @@ if __name__ == '__main__':
     sp.gamma = optimal_gamma
     sp.fit()
     print(metrics.adjusted_rand_score(sp.labels_, y))
+<<<<<<< HEAD
     sp.plot('spectral-experiment.svg')
+=======
+    sp.plot('spectral-experiment.svg')
+>>>>>>> 543116301ae081afc02f42e0c77b19b5089026dd
