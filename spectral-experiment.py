@@ -16,8 +16,8 @@ def read_spiral_data():
     pos_list = []
     ground_truth = []
     for row in reader:
-        pos_list.append([row[0], row[1]])
-        ground_truth.append(row[2])
+        pos_list.append([float(row[0]), float(row[1])])
+        ground_truth.append(int(row[2]))
 
     return (np.asarray(pos_list), np.asarray(ground_truth))
 
@@ -49,7 +49,7 @@ class SpectralAlgorithm(SpectralClustering):
         """
         self.affinity_matrix_ = pairwise_kernels(x_train, metric='rbf', gamma=self.gamma)
         embedding_features = spectral_embedding(self.affinity_matrix_, n_components=self.n_clusters,
-            norm_laplacian=False, drop_first=False)
+            norm_laplacian=True, drop_first=False)
         kmeans = KMeans(n_clusters=self.n_clusters)
         kmeans.fit(embedding_features)
         self.labels_ = kmeans.labels_
@@ -69,10 +69,10 @@ class SpectralAlgorithm(SpectralClustering):
 
 if __name__ == '__main__':
     X, y = read_spiral_data()
-    sp = SpectralAlgorithm(X, 3)
+    sp = SpectralAlgorithm(X, 2)
     max_score = 0
-    start_gamma = 1
-    end_gamma = 2400
+    start_gamma = 130
+    end_gamma = 240
     optimal_gamma = start_gamma
     gamma_list = np.linspace(start_gamma, end_gamma)
     inertia_list = []
@@ -87,4 +87,4 @@ if __name__ == '__main__':
     print(optimal_gamma)
     sp.gamma = optimal_gamma
     sp.fit()
-    # sp.plot('spectral-experiment.svg')
+    sp.plot('spectral-experiment.svg')
