@@ -16,9 +16,24 @@ def read_spiral_data():
     pos_list = []
     ground_truth = []
     for row in reader:
-        pos_list.append([row[0], row[1]])
-        ground_truth.append(row[2])
+        pos_list.append([float(row[0]), float(row[1])])
+        ground_truth.append(int(row[2]))
 
+    return (np.asarray(pos_list), np.asarray(ground_truth))
+
+def _generate_three_circle_data():
+    pos_list = []
+    num_list = [60, 100, 140]
+    ground_truth = []
+    rd = random.Random()
+    # make the result reproducible across multiple run
+    rd.seed(0)
+    for i in range(1, 4): # radius: 0.1 * i
+        for _ in range(num_list[i - 1]):
+            r = 0.1 * i + 0.01 * (2 * rd.random() - 1)
+            angle = 2 * np.pi * rd.random()
+            pos_list.append([r * np.cos(angle), r * np.sin(angle)])
+            ground_truth.append(i)
     return (np.asarray(pos_list), np.asarray(ground_truth))
 
 class SpectralAlgorithm(SpectralClustering):
@@ -68,23 +83,26 @@ class SpectralAlgorithm(SpectralClustering):
         plt.show()
 
 if __name__ == '__main__':
-    X, y = read_spiral_data()
+    X, y = _generate_three_circle_data()
     sp = SpectralAlgorithm(X, 3)
     max_score = 0
+    # please modify the searching range to get better results
     start_gamma = 1
-    end_gamma = 2400
+    end_gamma = 2000
     optimal_gamma = start_gamma
     gamma_list = np.linspace(start_gamma, end_gamma)
     inertia_list = []
     # linear grid search
-    for gamma in np.linspace(start_gamma, end_gamma):
+    for gamma in gamma_list:
+        sp.gamma = gamma
         sp.fit()
         score = metrics.adjusted_rand_score(sp.labels_, y)
         if score > max_score:
             max_score = score
             optimal_gamma = gamma
-    print(max_score)
-    print(optimal_gamma)
+    print('max score', max_score)
+    print('optimal gamma', optimal_gamma)
     sp.gamma = optimal_gamma
     sp.fit()
-    # sp.plot('spectral-experiment.svg')
+    print(metrics.adjusted_rand_score(sp.labels_, y))
+    sp.plot('spectral-experiment.svg')
