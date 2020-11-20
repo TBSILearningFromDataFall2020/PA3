@@ -11,11 +11,11 @@ from sklearn import metrics
 
 def _generate_three_circle_data():
     pos_list = []
-    num_list = [60, 100, 140]
+    num_list = [60,100,140]
     ground_truth = []
     rd = random.Random()
     # make the result reproducible across multiple run
-    # rd.seed(0)
+    rd.seed(0)
     for i in range(1, 4): # radius: 0.1 * i
         for _ in range(num_list[i - 1]):
             r = 0.1 * i + 0.01 * (2 * rd.random() - 1)
@@ -52,7 +52,7 @@ class SpectralAlgorithm(SpectralClustering):
         self.affinity_matrix_ = pairwise_kernels(x_train, metric='rbf', gamma=self.gamma)
         embedding_features = spectral_embedding(self.affinity_matrix_, n_components=self.n_clusters,
             norm_laplacian=False, drop_first=False)
-        normalized_embedding_features = embedding_features /np.linalg.norm(embedding_features, axis=1).reshape((300, 1))
+        normalized_embedding_features = embedding_features /np.linalg.norm(embedding_features, axis=1).reshape((self.affinity_matrix_.shape[0], 1))
         kmeans = KMeans(n_clusters=self.n_clusters)
         kmeans.fit(normalized_embedding_features)
         self.labels_ = kmeans.labels_
@@ -73,10 +73,6 @@ class SpectralAlgorithm(SpectralClustering):
 if __name__ == '__main__':
     X, y = _generate_three_circle_data()
     sp = SpectralAlgorithm(X, 3)
-    for i in ([0.01, 0.1, 1, 5, 10, 50]):
-        sp.gamma = i
-        sp.fit()
-        print(i, metrics.adjusted_rand_score(sp.labels_, y))
-    # sp.gamma = 1
-    # sp.fit()
-    # sp.plot('spectral-experiment.svg')
+    sp.gamma = 1085
+    sp.fit()
+    sp.plot('spectral-experiment.svg')
