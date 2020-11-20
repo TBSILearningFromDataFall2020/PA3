@@ -56,6 +56,7 @@ class SpectralAlgorithm(SpectralClustering):
         kmeans = KMeans(n_clusters=self.n_clusters)
         kmeans.fit(normalized_embedding_features)
         self.labels_ = kmeans.labels_
+        self.inertia_ = kmeans.inertia_
 
     def plot(self, savefig_name):
         color_vector = ['r', 'b', 'g', 'm', 'y', 'c', 'k']
@@ -73,6 +74,20 @@ class SpectralAlgorithm(SpectralClustering):
 if __name__ == '__main__':
     X, y = _generate_three_circle_data()
     sp = SpectralAlgorithm(X, 3)
-    sp.gamma = 1085
+    min_inertia_ = 100000
+    start_gamma = 1
+    end_gamma = 1200
+    optimal_gamma = start_gamma
+    gamma_list = np.linspace(start_gamma, end_gamma)
+    inertia_list = []
+    # linear grid search
+    for gamma in np.linspace(start_gamma, end_gamma):
+        sp.fit()
+        inertia_list.append(sp.inertia_)
+        if sp.inertia_ > min_inertia_:
+            min_inertia_ = sp.inertia_
+            optimal_gamma = start_gamma
+    print(inertia_list)    
+    sp.gamma = optimal_gamma
     sp.fit()
     sp.plot('spectral-experiment.svg')
