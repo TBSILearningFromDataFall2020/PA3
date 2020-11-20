@@ -77,14 +77,15 @@ if __name__ == '__main__':
     gamma_list = np.linspace(start_gamma, end_gamma)
     inertia_list = []
     # linear grid search
-    for gamma in np.linspace(start_gamma, end_gamma):
+    for gamma in gamma_list:
         sp.fit()
         score = metrics.adjusted_rand_score(sp.labels_, y)
-        if score > max_score:
+        if score < max_score:
             max_score = score
             optimal_gamma = gamma
-    print(max_score)
-    print(optimal_gamma)
+    print('max score', max_score)
+    print('optimal gamma', optimal_gamma)
     sp.gamma = optimal_gamma
     sp.fit()
+    print(metrics.adjusted_rand_score(sp.labels_, y))
     sp.plot('spectral-experiment.svg')
