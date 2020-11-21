@@ -66,6 +66,7 @@ if __name__ == '__main__':
     weight = [w_1, w_2]
     heuristic_num_clusters = 2
     num_of_samples = 1500
+    np.random.seed(2020)
     dg_instance = gaussian_mixture_generator(mu, Cov, weight, data_points=num_of_samples)
 
     kmeans_instance_from_dg = Kmeans_algorithm(dg_instance.data, heuristic_num_clusters)
