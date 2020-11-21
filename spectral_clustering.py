@@ -9,7 +9,9 @@ class SpectralClustering:
 
     Parameters:
     -----------
-    n_clusters : the number of clusters and the number of eigenvectors to take
+    n_clusters : integer
+        the number of clusters and the number of eigenvectors to take
+
     gamma: double, optional, Kernel coefficient for rbf
 
     Attributes:

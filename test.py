@@ -9,6 +9,7 @@ from sklearn import cluster
 from sklearn import mixture
 from sklearn.manifold import spectral_embedding
 from sklearn.metrics.pairwise import pairwise_kernels
+from sklearn.feature_extraction import image
 
 from kmeans import KMeans
 from spectral_clustering import SpectralClustering
@@ -84,7 +85,8 @@ class TestSpectralClustering(unittest.TestCase):
         norm_2 = np.linalg.norm(affinity_matrix_)
         self.assertAlmostEqual(norm_1, norm_2)
 
-    @unittest.skipIf(SpectralClustering(2).skip, 'skip bonus question')
+@unittest.skipIf(SpectralClustering(2).skip, 'skip bonus question')
+class TestNormalizedSpectralClustering(unittest.TestCase):    
     def test_normalized_embedding(self):
         x = np.array([[1, 0], [0, 1], [3, 0], [4, 1]])
         sc = SpectralClustering(2)
@@ -98,6 +100,33 @@ class TestSpectralClustering(unittest.TestCase):
         second_vector = embedding_features[:, 1] / embedding_features[0, 1]
         second_vector_standard = embedding_features_standard[:, 1] / embedding_features_standard[0, 1]
         assert_array_almost_equal(second_vector, second_vector_standard)
+    def test_image_segmentation(self):
+        # https://scikit-learn.org/stable/auto_examples/cluster/plot_segmentation_toy.html
+        l = 100
+        x, y = np.indices((l, l))
+        center1 = (28, 24)
+        center2 = (40, 50)
+        radius1, radius2 = 16, 14
+        circle1 = (x - center1[0]) ** 2 + (y - center1[1]) ** 2 < radius1 ** 2
+        circle2 = (x - center2[0]) ** 2 + (y - center2[1]) ** 2 < radius2 ** 2
+        img = circle1 + circle2
+        mask = img.astype(bool)
+        img = img.astype(float)
+        img += 1 + 0.2 * np.random.randn(*img.shape)
+        graph = image.img_to_graph(img, mask=mask) # sparse matrix
+        graph.data = np.exp(-graph.data / graph.data.std())
+        standard_sc = cluster.SpectralClustering(n_clusters=2, eigen_solver='arpack',
+                affinity='precomputed', random_state=2020)
+        standard_sc.fit(graph)
+        labels = standard_sc.labels_
+        sc = SpectralClustering(n_clusters=2)
+        sc.affinity_matrix_ = graph.todense()
+        embedding_features = sc._get_embedding(norm_laplacian=True)
+        kmeans = cluster.KMeans(n_clusters=2, random_state=2020)
+        kmeans.fit(embedding_features)
+        self.assertAlmostEqual(metrics.adjusted_rand_score(labels, kmeans.labels_), 1.0)
+
+
 
 if __name__ == '__main__':
     unittest.main()
