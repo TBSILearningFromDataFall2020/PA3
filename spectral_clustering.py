@@ -23,6 +23,7 @@ class SpectralClustering:
     """
     def __init__(self, n_clusters, gamma=1.0):
         self.n_clusters = n_clusters
+        self.skip = False
         self.gamma = gamma
 
     def train(self, x_train):
@@ -54,11 +55,16 @@ class SpectralClustering:
         return np.ones([x_train.shape[0], x_train.shape[0]])
         # end of your modification
 
-    def _get_embedding(self):
+    def _get_embedding(self, norm_laplacian=False):
         '''
         get low dimension features from embedded representation of data
         by taking the first k eigenvectors.
         k should be equal to self.n_clusters
+
+        Parameters
+        ----------
+        norm_laplacian: bool, optional, default=False
+            If True, then compute normalized Laplacian.
 
         Returns
         -------
