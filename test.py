@@ -84,5 +84,20 @@ class TestSpectralClustering(unittest.TestCase):
         norm_2 = np.linalg.norm(affinity_matrix_)
         self.assertAlmostEqual(norm_1, norm_2)
 
+    @unittest.skipIf(SpectralClustering(2).skip, 'skip bonus question')
+    def test_normalized_embedding(self):
+        x = np.array([[1, 0], [0, 1], [3, 0], [4, 1]])
+        sc = SpectralClustering(2)
+        sc.affinity_matrix_ = sc._get_affinity_matrix(x)
+
+        embedding_features_standard = spectral_embedding(sc.affinity_matrix_, n_components=2,
+            norm_laplacian=True, drop_first=False)
+        embedding_features = sc._get_embedding(norm_laplacian=True)
+        all_one_vector = embedding_features[:, 0] / embedding_features[0, 0]
+        assert_array_almost_equal(all_one_vector, np.ones(4))
+        second_vector = embedding_features[:, 1] / embedding_features[0, 1]
+        second_vector_standard = embedding_features_standard[:, 1] / embedding_features_standard[0, 1]
+        assert_array_almost_equal(second_vector, second_vector_standard)
+
 if __name__ == '__main__':
     unittest.main()
