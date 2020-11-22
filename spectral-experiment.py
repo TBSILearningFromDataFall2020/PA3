@@ -1,25 +1,14 @@
-import csv
 import random
 
 import numpy as np
 from matplotlib import pyplot as plt
 
-from spectral_clustering import SpectralClustering
 from sklearn.metrics.pairwise import pairwise_kernels
 from sklearn.manifold import spectral_embedding
 from sklearn.cluster import KMeans
 from sklearn import metrics
 
-def read_spiral_data():
-    f = open('spirals_clustered.csv')
-    reader = csv.reader(f, delimiter=',')
-    pos_list = []
-    ground_truth = []
-    for row in reader:
-        pos_list.append([float(row[0]), float(row[1])])
-        ground_truth.append(int(row[2]))
-
-    return (np.asarray(pos_list), np.asarray(ground_truth))
+from spectral_clustering import SpectralClustering
 
 def _generate_three_circle_data():
     pos_list = []
@@ -43,7 +32,7 @@ class SpectralAlgorithm(SpectralClustering):
     def __init__(self, input_data, n_clusters):
         self.data = input_data
         self.num = self.data.shape[0] # row, n data points
-        self.d = input_data[0,:].shape[0]
+        self.d = input_data[0, :].shape[0]
         super().__init__(n_clusters)
 
     def fit(self):

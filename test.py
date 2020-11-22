@@ -6,7 +6,6 @@ from sklearn import metrics
 from sklearn.utils._testing import assert_array_almost_equal
 from sklearn import datasets
 from sklearn import cluster
-from sklearn import mixture
 from sklearn.manifold import spectral_embedding
 from sklearn.metrics.pairwise import pairwise_kernels
 from sklearn.feature_extraction import image
@@ -29,7 +28,8 @@ class TestKMeans(unittest.TestCase):
 
     def test_gaussian_mixture(self):
         pos_list, ground_truth = datasets.make_blobs(n_samples=100,
-            centers=[[3, 3], [-3, -3], [3, -3], [-3, 3]], cluster_std=1, random_state=0)
+                                                     centers=[[3, 3], [-3, -3], [3, -3], [-3, 3]],
+                                                     cluster_std=1, random_state=0)
         kmeans = KMeans(4)
         standard_kmeans = cluster.KMeans(4, random_state=0)
         np.random.seed(2020)
@@ -53,7 +53,7 @@ class TestSpectralClustering(unittest.TestCase):
         sc.affinity_matrix_ = sc._get_affinity_matrix(x)
 
         embedding_features_standard = spectral_embedding(sc.affinity_matrix_, n_components=2,
-            norm_laplacian=False, drop_first=False)
+                                                         norm_laplacian=False, drop_first=False)
         embedding_features = sc._get_embedding()
         all_one_vector = embedding_features[:, 0] / embedding_features[0, 0]
         assert_array_almost_equal(all_one_vector, np.ones(4))
@@ -63,7 +63,8 @@ class TestSpectralClustering(unittest.TestCase):
 
     def test_gaussian_mixture(self):
         pos_list, ground_truth = datasets.make_blobs(n_samples=100,
-            centers=[[3, 3], [-3, -3], [3, -3], [-3, 3]], cluster_std=1, random_state=0)
+                                                     centers=[[3, 3], [-3, -3], [3, -3], [-3, 3]],
+                                                     cluster_std=1, random_state=0)
         sc = SpectralClustering(4, gamma=2.0)
         np.random.seed(2020)
         sc.fit(pos_list)
@@ -76,7 +77,7 @@ class TestSpectralClustering(unittest.TestCase):
         time_delta_1 = time.time() - start_time
 
         start_time = time.time()
-        sc = SpectralClustering(2, gamma=0.5)        
+        sc = SpectralClustering(2, gamma=0.5)
         affinity_matrix_ = sc._get_affinity_matrix(x)
         time_delta_2 = time.time() - start_time
 
@@ -86,14 +87,14 @@ class TestSpectralClustering(unittest.TestCase):
         self.assertAlmostEqual(norm_1, norm_2)
 
 @unittest.skipIf(SpectralClustering(2).skip, 'skip bonus question')
-class TestNormalizedSpectralClustering(unittest.TestCase):    
+class TestNormalizedSpectralClustering(unittest.TestCase):
     def test_normalized_embedding(self):
         x = np.array([[1, 0], [0, 1], [3, 0], [4, 1]])
         sc = SpectralClustering(2)
         sc.affinity_matrix_ = sc._get_affinity_matrix(x)
 
         embedding_features_standard = spectral_embedding(sc.affinity_matrix_, n_components=2,
-            norm_laplacian=True, drop_first=False)
+                                                         norm_laplacian=True, drop_first=False)
         embedding_features = sc._get_embedding(norm_laplacian=True)
         all_one_vector = embedding_features[:, 0] / embedding_features[0, 0]
         assert_array_almost_equal(all_one_vector, np.ones(4))
@@ -116,7 +117,7 @@ class TestNormalizedSpectralClustering(unittest.TestCase):
         graph = image.img_to_graph(img, mask=mask) # sparse matrix
         graph.data = np.exp(-graph.data / graph.data.std())
         standard_sc = cluster.SpectralClustering(n_clusters=2, eigen_solver='arpack',
-                affinity='precomputed', random_state=2020)
+                                                 affinity='precomputed', random_state=2020)
         standard_sc.fit(graph)
         labels = standard_sc.labels_
         sc = SpectralClustering(n_clusters=2)

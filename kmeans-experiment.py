@@ -14,14 +14,16 @@ from matplotlib import pyplot as plt
 from kmeans import KMeans
 
 class gaussian_mixture_generator:
-
     def __init__(self, mean, covariance, weight, data_points=300):
         num_component = len(weight)
-        mixture_type_list = list(np.random.choice(np.arange(num_component), size=data_points, p=weight))
-        whole_data = np.random.multivariate_normal(mean[0, :], covariance[0, :, :], size=mixture_type_list.count(0))
+        mixture_type_list = list(np.random.choice(np.arange(num_component),
+                                                  size=data_points, p=weight))
+        whole_data = np.random.multivariate_normal(mean[0, :], covariance[0, :, :],
+                                                   size=mixture_type_list.count(0))
         for i in range(1, num_component):
-            set_tmp = np.random.multivariate_normal(mean[i, :], covariance[i, :, :], size=mixture_type_list.count(i))
-            whole_data = np.concatenate((whole_data,set_tmp))
+            set_tmp = np.random.multivariate_normal(mean[i, :], covariance[i, :, :],
+                                                    size=mixture_type_list.count(i))
+            whole_data = np.concatenate((whole_data, set_tmp))
         self.data = whole_data
 
 class Kmeans_algorithm(KMeans):
@@ -31,13 +33,15 @@ class Kmeans_algorithm(KMeans):
     def __init__(self, input_data, n_clusters):
         self.data = input_data
         self.num = self.data.shape[0] # row, n data points
-        self.d = input_data[0,:].shape[0]
+        self.d = input_data[0, :].shape[0]
         super().__init__(n_clusters)
+
     def fit(self):
         '''
         fit the model with self.data
         '''
         super().fit(self.data)
+
     def plot(self, savefig_name):
         color_vector = ['r', 'b', 'g', 'm', 'y', 'c', 'k']
         if self.n_clusters >= 7:
@@ -59,7 +63,7 @@ if __name__ == '__main__':
     C_1 = np.array([[0.5, 0], [0, 8]])
     C_2 = np.array([[0.5, 0], [0, 8]])
     Cov = np.concatenate((C_1, C_2)).reshape(2, 2, 2)
-    
+
     # mixture weights
     w_1 = 0.5
     w_2 = 1 - w_1

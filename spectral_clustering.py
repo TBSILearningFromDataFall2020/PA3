@@ -50,7 +50,7 @@ class SpectralClustering:
 
         Returns
         -------
-        similarity matrix: 
+        similarity matrix:
             np.array, shape (num_samples, num_samples)
         '''
         # start of your modification
