@@ -1,5 +1,6 @@
 import unittest
 import time
+import sys
 
 import numpy as np
 from sklearn import metrics
@@ -129,5 +130,26 @@ class TestNormalizedSpectralClustering(unittest.TestCase):
 
 
 
-if __name__ == '__main__':
-    unittest.main()
+if __name__=="__main__":
+    if len(sys.argv) > 1:
+        unittest.main()
+    test_obj = unittest.main(exit=False)
+    q1 = 2
+    q2 = 4
+    q3 = 0
+    if len(test_obj.result.skipped) == 0:
+        q3 = 2.5
+    f_or_e = test_obj.result.failures
+    f_or_e.extend(test_obj.result.errors)
+    for failure in f_or_e:
+        if str(failure[0]).find('KMeans') > 0 and q1 > 0:
+            q1 -= 1
+        elif str(failure[0]).find('NormalizedSpectralClustering') > 0 and q3 > 0:
+            q3 -= 1.5
+            if q3 < 0:
+                q3 = 0
+        elif str(failure[0]).find('SpectralClustering') > 0 and q2 > 0:
+            q2 -= 1
+    print("Your final score of PA3: ", q1 + q2 + q3)
+    if len(f_or_e) > 0:
+        exit(-1)
