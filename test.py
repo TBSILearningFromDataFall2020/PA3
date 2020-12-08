@@ -10,9 +10,11 @@ from sklearn import cluster
 from sklearn.manifold import spectral_embedding
 from sklearn.metrics.pairwise import pairwise_kernels
 from sklearn.feature_extraction import image
+from sklearn import mixture
 
 from kmeans import KMeans
 from spectral_clustering import SpectralClustering
+from gmm import GMM
 
 class TestKMeans(unittest.TestCase):
     def test_implementation(self):
@@ -128,7 +130,23 @@ class TestNormalizedSpectralClustering(unittest.TestCase):
         kmeans.fit(embedding_features)
         self.assertAlmostEqual(metrics.adjusted_rand_score(labels, kmeans.labels_), 1.0)
 
-
+class TestGMM(unittest.TestCase):
+    def test_implementation(self):
+        centers_ = np.array([[3, 3], [-3, -3]])
+        pos_list, ground_truth = datasets.make_blobs(n_samples=100,
+            centers=centers_, cluster_std=1, random_state=0)
+        np.random.seed(2020)
+        gmm = GMM(n_components=2)
+        gmm.fit(pos_list)
+        gmm_standard = mixture.GaussianMixture(n_components=2)
+        gmm_standard.fit(pos_list)
+        self.assertTrue(np.linalg.norm(gmm.means_ - centers_) < 0.4)
+        self.assertAlmostEqual(gmm_standard.lower_bound_, gmm.lower_bound_)
+        assert_array_almost_equal(gmm.weights_, [0.5, 0.5])
+        covariances_groud_truth = np.zeros([2, 2, 2])
+        covariances_groud_truth[0, :, :] = np.eye(2)
+        covariances_groud_truth[1, :, :] = np.eye(2)
+        self.assertTrue(np.linalg.norm(covariances_groud_truth - gmm.covariances_) < 0.2)
 
 if __name__=="__main__":
     if len(sys.argv) > 1:
