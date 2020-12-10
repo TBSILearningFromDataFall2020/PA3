@@ -18,4 +18,4 @@ dataset, which is obtained by `python spectral-experiment.py`.
 
 ![](spectral-experiment.svg)
 
-I think too big gamma reduces the accuracy because of floating-point computational issue. Small gamma also does not work well because of the dense property of the Laplacian matrix. That is, points from different clusters also have large similarity.
+I think too big gamma reduces the accuracy because points within the same community have too small similarity. Small gamma also does not work well because of the dense property of the Laplacian matrix. That is, points from different clusters also have large similarity.

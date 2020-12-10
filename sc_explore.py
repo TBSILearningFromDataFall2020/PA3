@@ -33,10 +33,9 @@ if __name__ == '__main__':
     if args.plot:
         plt.ion()
     index = 0
-    for gamma in np.linspace(1000, 1400):
+    for gamma in np.linspace(2000, 5000):
         affinity_matrix_ = pairwise_kernels(x_train, metric='rbf', gamma=gamma)
         np.fill_diagonal(affinity_matrix_, 0)
-        print(np.max(affinity_matrix_))
         embedding_features = spectral_embedding(affinity_matrix_, n_components=3,
                 norm_laplacian=False, drop_first=False)
         if args.plot:
