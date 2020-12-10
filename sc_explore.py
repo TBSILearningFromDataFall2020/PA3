@@ -16,6 +16,7 @@ from sklearn.metrics import adjusted_rand_score
 from spectral_clustering import SpectralClustering
 
 save_dir = 'build/gamma/'
+color_vector = ['r', 'b', 'g', 'm', 'y', 'c', 'k']
 
 def _generate_three_circle_data():
     pos_list = []
@@ -94,7 +95,10 @@ if __name__ == '__main__':
             acc_list.append(acc)
             inertia_list.append(kmeans.inertia_)
             if args.plot:
-                plt.scatter(embedding_features[:, 1], embedding_features[:, 2])
+                data = embedding_features[:, 1:3]
+                for i in range(kmeans.n_clusters):
+                    category_i = np.where(kmeans.labels_ == i)[0]
+                    plt.scatter(data[category_i, 0], data[category_i, 1], color=color_vector[i])
                 plt.title('gamma = %.2f, acc= %.2f, inertia=%.2f' % (gamma, acc, kmeans.inertia_))
                 plt.savefig(os.path.join(save_dir, 'big-sc-%02d.png' % index))
                 plt.pause(0.5)
@@ -107,4 +111,16 @@ if __name__ == '__main__':
             plt.title('kmeans inertia varies as gamma increases')
             plt.xlabel('gamma')
             plt.ylabel('inertia')
-            plt.savefig(os.path.join(save_dir, 'small.png'))
+            plt.savefig(os.path.join(save_dir, 'big.png'))
+            plt.clf()
+            # plot in the original space
+            gamma = g2
+            sc = SpectralClustering(3, gamma=gamma)
+            sc.affinity_matrix_ = sc._get_affinity_matrix(x_train)
+            embedding_features = sc._get_embedding()
+            kmeans = KMeans(n_clusters=3)
+            kmeans.fit(embedding_features[:, 1:3])
+            for i in range(kmeans.n_clusters):
+                category_i = np.where(kmeans.labels_ == i)[0]
+                plt.scatter(x_train[category_i, 0], x_train[category_i, 1], color=color_vector[i])
+            plt.savefig(os.path.join(save_dir, '%.2f.png' % gamma))
