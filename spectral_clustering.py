@@ -93,11 +93,11 @@ class SpectralClustering:
             D = np.sum(m, axis=0)
             L = np.eye(D.shape[0]) - np.diag(1.0 / D) @ m
         values, vectors = np.linalg.eig(L)
-        Ls = [[i, values[i]] for i in range(n)]
+        Ls = [[i, np.real(values[i])] for i in range(n)]
         Ls.sort(key=lambda x:x[1])
         k = self.n_clusters
         selected_array = [Ls[i][0] for i in range(k)]
-        return vectors[:, selected_array]
+        return np.real(vectors[:, selected_array])
         # end of your modification
 
     def fit(self, x_train):
