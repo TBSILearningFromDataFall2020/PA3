@@ -95,7 +95,7 @@ class SpectralClustering:
             L = np.eye(D.shape[0]) - np.diag(1.0 / D) @ m
         v0 = np.random.uniform(-1, 1, L.shape[0])
         values, vectors = eigsh(-L, k=self.n_clusters, sigma=1.0, which='LM', v0=v0)
-        return vectors
+        return vectors.T[self.n_clusters::-1].T
         # end of your modification
 
     def fit(self, x_train):
