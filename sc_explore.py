@@ -1,5 +1,6 @@
 import os
 import random
+import argparse
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -24,16 +25,24 @@ def _generate_three_circle_data():
             ground_truth.append(i)
     return (np.asarray(pos_list), np.asarray(ground_truth))
 
-x_train, y = _generate_three_circle_data()
-plt.ion()
-index = 0
-for gamma in np.linspace(1000, 1400):
-    affinity_matrix_ = pairwise_kernels(x_train, metric='rbf', gamma=gamma)
-    embedding_features = spectral_embedding(affinity_matrix_, n_components=3,
-            norm_laplacian=False, drop_first=False)
-    plt.scatter(embedding_features[:, 1], embedding_features[:, 2])
-    plt.title('gamma = %.2f' % gamma)
-    plt.savefig(os.path.join(save_dir, 'sc-%02d.jpg' % index))
-    plt.pause(0.5)
-    index += 1
-    plt.clf()
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--plot', const=True, type=bool, nargs='?', default=False)
+    args = parser.parse_args()
+    x_train, y = _generate_three_circle_data()
+    if args.plot:
+        plt.ion()
+    index = 0
+    for gamma in np.linspace(1000, 1400):
+        affinity_matrix_ = pairwise_kernels(x_train, metric='rbf', gamma=gamma)
+        np.fill_diagonal(affinity_matrix_, 0)
+        print(np.max(affinity_matrix_))
+        embedding_features = spectral_embedding(affinity_matrix_, n_components=3,
+                norm_laplacian=False, drop_first=False)
+        if args.plot:
+            plt.scatter(embedding_features[:, 1], embedding_features[:, 2])
+            plt.title('gamma = %.2f' % gamma)
+            plt.savefig(os.path.join(save_dir, 'sc-%02d.png' % index))
+            plt.pause(0.5)
+            plt.clf() # create the video by "ffmpeg -r 4 -i sc-%02d.png -pix_fmt yuv420p output.mp4"
+        index += 1
