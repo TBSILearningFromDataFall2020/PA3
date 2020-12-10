@@ -45,6 +45,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--plot', const=True, type=bool, nargs='?', default=False)
     parser.add_argument('--small', const=True, type=bool, nargs='?', default=False)
+
     args = parser.parse_args()
     x_train, y = _generate_three_circle_data()
     if args.plot:
@@ -79,7 +80,7 @@ if __name__ == '__main__':
             plt.ylabel('inertia')
             plt.savefig(os.path.join(save_dir, 'small.png'))
     else:
-        gamma_list = np.linspace(9000, 11000)
+        gamma_list = np.linspace(9500, 11000)
         acc_list = []
         inertia_list = []
         for gamma in gamma_list:
@@ -89,17 +90,18 @@ if __name__ == '__main__':
             embedding_features = sc._get_embedding()
             kmeans = KMeans(n_clusters=3)
             kmeans.fit(embedding_features[:, 1:3])
-            acc_list.append(adjusted_rand_score(kmeans.labels_, y))
+            acc = adjusted_rand_score(kmeans.labels_, y)
+            acc_list.append(acc)
             inertia_list.append(kmeans.inertia_)
             if args.plot:
                 plt.scatter(embedding_features[:, 1], embedding_features[:, 2])
-                plt.title('gamma = %.2f' % gamma)
-                plt.savefig(os.path.join(save_dir, 'sc-%02d.png' % index))
+                plt.title('gamma = %.2f, acc= %.2f, inertia=%.2f' % (gamma, acc, kmeans.inertia_))
+                plt.savefig(os.path.join(save_dir, 'big-sc-%02d.png' % index))
                 plt.pause(0.5)
                 plt.clf() # create the video by "ffmpeg -r 4 -i sc-%02d.png -pix_fmt yuv420p output.mp4"
             index += 1
         g1, g2 = get_the_critical_point(gamma_list, acc_list)
-        print('the smallest gamma is between', g1, g2)
+        print('the largest gamma is between', g1, g2)
         if args.plot:
             plt.plot(gamma_list, inertia_list)
             plt.title('kmeans inertia varies as gamma increases')
