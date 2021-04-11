@@ -89,6 +89,13 @@ class TestSpectralClustering(unittest.TestCase):
         norm_2 = np.linalg.norm(affinity_matrix_)
         self.assertAlmostEqual(norm_1, norm_2)
 
+    def test_spectral_sbm(self):
+        from sbmising import sbm_graph
+        G = sbm_graph(100, 2, 16, 4)
+        sp = SpectralClustering(2)
+        sp.train(G)
+        print(sp.labels_)
+
 @unittest.skipIf(SpectralClustering(2).skip, 'skip bonus question')
 class TestNormalizedSpectralClustering(unittest.TestCase):
     def test_normalized_embedding(self):

@@ -1,4 +1,5 @@
 import numpy as np
+import networkx as nx
 
 from kmeans import KMeans
 
@@ -48,12 +49,18 @@ class SpectralClustering:
         '''
         construct similarity matrix from the data
 
+        Parameters
+        ----------
+        x_train: array-like or network graph
+
         Returns
         -------
         similarity matrix:
             np.array, shape (num_samples, num_samples)
         '''
         # start of your modification
+        if isinstance(x_train, nx.Graph):
+            return nx.adjacency_matrix(x_train)
         # construct affinity matrix
         n = x_train.shape[0] # num_data
         m = x_train.shape[-1] # num_features
